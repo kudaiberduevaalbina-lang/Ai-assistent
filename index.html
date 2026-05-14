@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ассистент</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-robot"></i> AI Chat</h2>
+                <button id="new-chat-btn"><i class="fa-solid fa-plus"></i> Новый чат</button>
+                <div class="style-selector" style="margin-top: 15px;">
+                    <label for="chat-style" style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px;">Стиль общения:</label>
+                    <select id="chat-style" style="width: 100%; padding: 8px; background: var(--bg-message-user); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; outline: none; font-size: 0.85rem;">
+                        <option value="normal">Обычный</option>
+                        <option value="respectful">К старшим (уважительно, Вы)</option>
+                        <option value="friendly">К младшим (на ты)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chat-history" id="chat-history">
+                <!-- History items will go here -->
+                <div class="history-item"><i class="fa-regular fa-message"></i> Текущий разговор</div>
+            </div>
+            <div class="sidebar-footer">
+                <button id="settings-btn"><i class="fa-solid fa-gear"></i> Настройки API</button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <div class="chat-header">
+                <button id="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+                <h3>AI Ассистент</h3>
+                <div class="header-actions">
+                    <!-- Status indicator -->
+                    <span id="api-status" class="status-indicator warning" title="API ключ не установлен"></span>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <!-- Welcome Message -->
+                <div class="message bot-message">
+                    <div class="message-avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="message-content">
+                        <p>Привет! Я умный AI ассистент. Я могу ответить на любые ваши вопросы.</p>
+                        <p class="hint">Для начала работы мне нужен API ключ. Нажмите на "Настройки API" (шестеренка слева) и введите ключ от Google Gemini.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="input-wrapper" id="input-wrapper">
+                    <div id="image-preview-container" class="image-preview-container" style="display: none;">
+                        <img id="image-preview" src="" alt="Preview">
+                        <button id="remove-image-btn"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="input-controls">
+                        <button id="attach-btn" title="Прикрепить изображение"><i class="fa-solid fa-paperclip"></i></button>
+                        <input type="file" id="file-input" accept="image/*" style="display: none;">
+                        <textarea id="chat-input" placeholder="Введите ваш вопрос здесь..." rows="1"></textarea>
+                        <button id="mic-btn" title="Голосовой ввод"><i class="fa-solid fa-microphone"></i></button>
+                        <button id="send-btn" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                <div class="disclaimer">AI может ошибаться. Проверяйте важную информацию.</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Настройки API</h3>
+                <button id="close-settings"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Для работы чат-бота необходим API ключ Google Gemini.</p>
+                <div class="form-group">
+                    <label for="api-key">Gemini API Key</label>
+                    <input type="password" id="api-key" placeholder="AIzaSy...">
+                </div>
+                <p class="help-text"><a href="https://aistudio.google.com/app/apikey" target="_blank">Получить бесплатный ключ здесь</a></p>
+            </div>
+            <div class="modal-footer">
+                <button id="save-settings" class="primary-btn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
