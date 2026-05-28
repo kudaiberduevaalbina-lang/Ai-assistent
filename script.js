@@ -395,18 +395,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         chatHistory.push({ role: "user", parts: parts });
 
-        if (!apiKey) {
-            setTimeout(() => {
-                addBotMessage("Пожалуйста, установите API ключ Gemini в настройках для получения ответов.", true);
-            }, 500);
-            return;
-        }
-
         const typingId = showTypingIndicator();
 
         try {
             let responseText = "";
-            if (apiKey.startsWith('sk-')) {
+            if (!apiKey) {
+                // Use server proxy (API key stored in Vercel environment variable)
+                const systemInstruction = buildSystemInstruction(chatHistory);
+                responseText = await callServerAPI(chatHistory, systemInstruction);
+            } else if (apiKey.startsWith('sk-')) {
                 responseText = await callOpenAI(chatHistory);
             } else {
                 responseText = await callGeminiAPI(chatHistory);
@@ -417,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             removeMessage(typingId);
             let errMsg = error.message;
-            if (apiKey.startsWith('sk-') && (errMsg.includes('Failed to fetch') || errMsg.includes('fetch') || errMsg.includes('network') || errMsg.includes('Network'))) {
+            if (apiKey && apiKey.startsWith('sk-') && (errMsg.includes('Failed to fetch') || errMsg.includes('fetch') || errMsg.includes('network') || errMsg.includes('Network'))) {
                 errMsg += " (CORS Error: OpenAI API запрещает прямые запросы из браузера. Пожалуйста, используйте ключ Gemini)";
             }
             addBotMessage(`Произошла ошибка: ${errMsg}. Проверьте правильность API ключа или подключение к интернету.`, true);
@@ -585,6 +582,64 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
+    }
+
+    // Build system instruction from UI state
+    function buildSystemInstruction(history) {
+        let sysText = "";
+        if (customPromptText) {
+            sysText += customPromptText + " ";
+        }
+        
+        const styleValue = chatStyle ? chatStyle.value : "normal";
+        const langVal = chatLanguage ? chatLanguage.value : "auto";
+        const langName = chatLanguage && chatLanguage.options ? chatLanguage.options[chatLanguage.selectedIndex].text : "";
+
+        if (langVal !== "auto") {
+            const cleanLangName = langName.split(' (')[0];
+            sysText += `Отвечай строго на языке: ${cleanLangName}. `;
+        }
+
+        sysText += "Ты можешь иллюстрировать свои ответы картинками. Если в контексте разговора уместно показать фотографию, изображение или иллюстрацию, обязательно вставляй её в свой ответ, используя формат: `![описание](ключевое_слово_на_английском)`. Например, если речь идет о Париже, ты можешь вставить `![Эйфелева башня](paris)`. Ключевое слово в круглых скобках обязательно должно быть на английском языке для работы поиска картинок. ";
+
+        const lastUserMsg = history.filter(m => m.role === 'user').pop();
+        const lastUserText = lastUserMsg && lastUserMsg.parts ? lastUserMsg.parts.find(p => p.text)?.text || "" : "";
+        const asksForPhoto = /(покажи|скинь|пришли|картинк|фото|изображен|рисунок|демонстрируй)/i.test(lastUserText);
+        if (asksForPhoto) {
+            sysText += "КРИТИЧЕСКИ ВАЖНО: Пользователь явно попросил показать или прислать изображение/фотографию! Ты ОБЯЗАН прислать изображение, используя формат `![описание](english_keyword)`. Обязательно переведи ключевое слово в круглых скобках на английский язык, чтобы поиск сработал (например, если просят котика, напиши `![Котик](cat)`). ";
+        }
+
+        if (styleValue === "respectful") {
+            sysText += "Твоя задача — общаться крайне уважительно, обращаться к собеседнику строго на 'Вы' и использовать вежливые формулировки, как при разговоре со старшим по возрасту или статусу. ";
+        } else if (styleValue === "friendly") {
+            sysText += "Твоя задача — общаться максимально дружелюбно, расслабленно, на 'ты', как с близким другом или с младшим. Можно использовать легкий сленг. ";
+        }
+
+        return sysText;
+    }
+
+    // Call Server Proxy API (Vercel Serverless Function)
+    async function callServerAPI(history, systemInstruction) {
+        const recentHistory = history.slice(-10);
+        
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: recentHistory,
+                systemInstruction: systemInstruction,
+                temperature: 0.7,
+                maxOutputTokens: 2000
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Ошибка сервера');
+        }
+
+        const data = await response.json();
+        return data.text;
     }
 
     // Call Gemini API
