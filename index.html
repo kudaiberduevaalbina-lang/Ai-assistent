@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Ассистент</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -13,23 +13,45 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2><i class="fa-solid fa-robot"></i> AI Chat</h2>
-                <button id="new-chat-btn"><i class="fa-solid fa-plus"></i> Новый чат</button>
-                <div class="style-selector" style="margin-top: 15px;">
-                    <label for="chat-style" style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px;">Стиль общения:</label>
-                    <select id="chat-style" style="width: 100%; padding: 8px; background: var(--bg-message-user); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; outline: none; font-size: 0.85rem;">
-                        <option value="normal">Обычный</option>
-                        <option value="respectful">К старшим (уважительно, Вы)</option>
-                        <option value="friendly">К младшим (на ты)</option>
+                <h2><i class="fa-solid fa-atom"></i> AI Chat</h2>
+                <button id="new-chat-btn"><i class="fa-solid fa-plus"></i> <span data-i18n="newChat">Новый чат</span></button>
+                <div class="style-selector">
+                    <label for="chat-style" data-i18n="chatStyle">Стиль общения:</label>
+                    <select id="chat-style">
+                        <option value="normal" data-i18n="styleNormal">Обычный</option>
+                        <option value="respectful" data-i18n="styleRespectful">К старшим (уважительно, Вы)</option>
+                        <option value="friendly" data-i18n="styleFriendly">К младшим (на ты)</option>
+                    </select>
+                </div>
+                <div class="language-selector">
+                    <label for="chat-language" data-i18n="language">Язык (Language):</label>
+                    <select id="chat-language">
+                        <option value="auto">Автоопределение (Auto)</option>
+                        <option value="ru-RU">Русский (Russian)</option>
+                        <option value="en-US">English (US)</option>
+                        <option value="es-ES">Español (Spanish)</option>
+                        <option value="fr-FR">Français (French)</option>
+                        <option value="de-DE">Deutsch (German)</option>
+                        <option value="zh-CN">中文 (Chinese)</option>
+                        <option value="ja-JP">日本語 (Japanese)</option>
+                        <option value="ko-KR">한국어 (Korean)</option>
+                        <option value="it-IT">Italiano (Italian)</option>
+                        <option value="ar-SA">العربية (Arabic)</option>
+                        <option value="hi-IN">हिन्दी (Hindi)</option>
+                        <option value="tr-TR">Türkçe (Turkish)</option>
+                        <option value="pt-BR">Português (Portuguese)</option>
+                        <option value="kk-KZ">Қазақша (Kazakh)</option>
+                        <option value="ky-KG">Кыргызча (Kyrgyz)</option>
+                        <option value="uz-UZ">O'zbekcha (Uzbek)</option>
                     </select>
                 </div>
             </div>
             <div class="chat-history" id="chat-history">
                 <!-- History items will go here -->
-                <div class="history-item"><i class="fa-regular fa-message"></i> Текущий разговор</div>
+                <div class="history-item active"><i class="fa-regular fa-message"></i> <span data-i18n="currentChat">Текущий разговор</span></div>
             </div>
             <div class="sidebar-footer">
-                <button id="settings-btn"><i class="fa-solid fa-gear"></i> Настройки API</button>
+                <button id="settings-btn"><i class="fa-solid fa-gear"></i> <span data-i18n="settings">Настройки API</span></button>
             </div>
         </aside>
 
@@ -37,9 +59,10 @@
         <main class="chat-main">
             <div class="chat-header">
                 <button id="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-                <h3>AI Ассистент</h3>
-                <div class="header-actions">
-                    <!-- Status indicator -->
+                <h3 data-i18n="aiAssistant">AI Ассистент</h3>
+                <div class="header-actions" style="display: flex; gap: 15px; align-items: center;">
+                    <button id="clear-chat-btn" title="Очистить чат" class="header-btn"><i class="fa-solid fa-trash-can"></i></button>
+                    <button id="export-chat-btn" title="Экспорт чата" class="header-btn"><i class="fa-solid fa-download"></i></button>
                     <span id="api-status" class="status-indicator warning" title="API ключ не установлен"></span>
                 </div>
             </div>
@@ -47,10 +70,10 @@
             <div class="chat-messages" id="chat-messages">
                 <!-- Welcome Message -->
                 <div class="message bot-message">
-                    <div class="message-avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="message-avatar"><i class="fa-solid fa-atom"></i></div>
                     <div class="message-content">
-                        <p>Привет! Я умный AI ассистент. Я могу ответить на любые ваши вопросы.</p>
-                        <p class="hint">Для начала работы мне нужен API ключ. Нажмите на "Настройки API" (шестеренка слева) и введите ключ от Google Gemini.</p>
+                        <p data-i18n="welcome1">Привет! Я умный AI ассистент. Я могу ответить на любые ваши вопросы.</p>
+                        <p class="hint" data-i18n="welcome2">Для начала работы мне нужен API ключ. Нажмите на "Настройки API" (шестеренка слева) и введите ключ.</p>
                     </div>
                 </div>
             </div>
@@ -64,12 +87,12 @@
                     <div class="input-controls">
                         <button id="attach-btn" title="Прикрепить изображение"><i class="fa-solid fa-paperclip"></i></button>
                         <input type="file" id="file-input" accept="image/*" style="display: none;">
-                        <textarea id="chat-input" placeholder="Введите ваш вопрос здесь..." rows="1"></textarea>
+                        <textarea id="chat-input" data-i18n-placeholder="inputPlaceholder" placeholder="Введите ваш вопрос здесь..." rows="1"></textarea>
                         <button id="mic-btn" title="Голосовой ввод"><i class="fa-solid fa-microphone"></i></button>
                         <button id="send-btn" disabled><i class="fa-solid fa-paper-plane"></i></button>
                     </div>
                 </div>
-                <div class="disclaimer">AI может ошибаться. Проверяйте важную информацию.</div>
+                <div class="disclaimer" data-i18n="disclaimer">AI может ошибаться. Проверяйте важную информацию.</div>
             </div>
         </main>
     </div>
@@ -78,19 +101,23 @@
     <div class="modal-overlay" id="settings-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3>Настройки API</h3>
+                <h3 data-i18n="settingsTitle">Настройки API</h3>
                 <button id="close-settings"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
-                <p>Для работы чат-бота необходим API ключ Google Gemini.</p>
+                <p data-i18n="settingsDesc">Для работы чат-бота необходим API ключ Google Gemini или OpenAI.</p>
                 <div class="form-group">
-                    <label for="api-key">Gemini API Key</label>
-                    <input type="password" id="api-key" placeholder="AIzaSy...">
+                    <label for="api-key" data-i18n="apiKeyLabel">API Key (OpenAI или Gemini)</label>
+                    <input type="password" id="api-key" placeholder="sk-proj-... или AIzaSy...">
                 </div>
-                <p class="help-text"><a href="https://aistudio.google.com/app/apikey" target="_blank">Получить бесплатный ключ здесь</a></p>
+                <div class="form-group">
+                    <label for="custom-prompt" data-i18n="customPromptLabel">Кастомная роль бота (System Prompt)</label>
+                    <textarea id="custom-prompt" data-i18n-placeholder="customPromptPlaceholder" placeholder="Например: Ты опытный Senior программист. Отвечай кратко и только кодом." rows="3" style="width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-primary); border-radius: 12px; outline: none; font-size: 0.9rem; resize: vertical; transition: all 0.3s ease;"></textarea>
+                </div>
+                <p class="help-text"><a href="https://aistudio.google.com/app/apikey" target="_blank" data-i18n="getKey">Получить бесплатный ключ здесь</a></p>
             </div>
             <div class="modal-footer">
-                <button id="save-settings" class="primary-btn">Сохранить</button>
+                <button id="save-settings" class="primary-btn" data-i18n="saveBtn">Сохранить</button>
             </div>
         </div>
     </div>
